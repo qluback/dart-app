@@ -1,14 +1,3 @@
-// import {
-//   FaArrowUpLong,
-//   FaClock,
-//   FaCloudShowersHeavy,
-//   FaDroplet,
-//   FaMagnifyingGlass,
-//   FaSun,
-//   FaWater,
-//   FaWind,
-// } from "react-icons/fa6";
-
 import { useState } from "react";
 import Keyboard from "./components/Keyboard";
 import Board from "./components/Board";

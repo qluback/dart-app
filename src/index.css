@@ -22,9 +22,3 @@ body {
   color: #000000;
   list-style: none;
 }
-
-.current-weather-container {
-  background: url("./assets/banner.png");
-  background-size: 100%;
-  background-position: bottom;
-}

@@ -57,9 +57,7 @@ export default function Board({ game }) {
       })}
       <ul>
         {currentGame.turns.map((turn) => {
-          // console.log(turn);
           return turn.hits.map((hit, index) => {
-            // console.log(hit)
             return (
               <li key={index}>
                 {turn.playerIndex} hits {hit.label}

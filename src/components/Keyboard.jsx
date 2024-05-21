@@ -26,6 +26,7 @@ export default function Keyboard({ onSelectKey }) {
     "Triple",
     "Back",
   ];
+  
   return (
     <div className="grid grid-cols-7 gap-1 bg-gray-600 p-2">
       {gameKeys.map((key) => {
