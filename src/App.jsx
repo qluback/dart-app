@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Keyboard from "./components/Keyboard";
 import Board from "./components/Board";
+import Results from "./components/Results";
 
 export default function App() {
   const [game, setGame] = useState({
@@ -68,7 +69,6 @@ export default function App() {
           gameUpdated = switchPlayer(gameUpdated, lastTurn.playerIndex ? 0 : 1);
         }
 
-        console.log("mult", gameUpdated);
         return gameUpdated;
       }
 
@@ -91,12 +91,11 @@ export default function App() {
         gameUpdated.players[lastTurn.playerIndex].score = totalPlayerScore;
       }
 
-      if (isTotalPlayerScoreLowerThanZero(totalPlayerScore)) {
+      // player must finish with a hit on double/triple area
+      if (totalPlayerScore === 0 || isTotalPlayerScoreLowerThanZero(totalPlayerScore)) {
         gameUpdated = resetPlayerScore(gameUpdated, lastTurn);
         gameUpdated = switchPlayer(gameUpdated, lastTurn.playerIndex ? 0 : 1);
       }
-
-      console.log("ok", gameUpdated);
 
       return gameUpdated;
     });
@@ -126,12 +125,11 @@ export default function App() {
     return game;
   }
 
-  console.log(game.players.find((player) => player.score === 0));
   const winner = game.players.find((player) => player.score === 0) ?? null;
 
   return (
     <div className="h-screen overflow-hidden flex flex-col justify-between">
-      {winner !== null ? <p>{winner.name} won !</p> : <Board game={game} />}
+      {winner !== null ? <Results players={game.players} /> : <Board game={game} />}
       <Keyboard onSelectKey={handleSelectKey} />
     </div>
   );
