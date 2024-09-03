@@ -1,4 +1,8 @@
 # dart-app
+App to report scores during dart games
+
+## Stack
+ReactJS TailwindCSS
 
 ## Launch
 ```sh
