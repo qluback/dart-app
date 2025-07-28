@@ -28,7 +28,7 @@ export default function Keyboard({ onSelectKey }) {
   ];
   
   return (
-    <div className="grid grid-cols-7 gap-1 bg-gray-600 p-2">
+    <div className="grid grid-cols-7 gap-1 bg-green-500 p-2 w-full xl:min-h-[500px] xl:flex-1">
       {gameKeys.map((key) => {
         let cssClasses = "p-2";
         switch (key) {

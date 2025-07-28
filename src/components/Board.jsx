@@ -2,7 +2,7 @@ export default function Board({ game }) {
   let currentGame = game;
   const activeTurn = currentGame.turns[currentGame.turns.length - 1];
   return (
-    <div className="flex flex-col gap-4 p-2 overflow-auto">
+    <div className="flex flex-col gap-4 p-2 overflow-auto w-full xl:flex-1">
       {currentGame.players.map((player, currentPlayerIndex) => {
         const lastPlayerTurn =
           currentGame.turns.findLast(
@@ -15,12 +15,22 @@ export default function Board({ game }) {
           if (lastPlayerTurn !== null) {
             hit = lastPlayerTurn.hits[i] ?? hit;
           }
+
+          const isHitCompleted = hit.label !== null && hit.label !== "D" && hit.label !== "T";
+
+          let bgClass = "border-neutral-500";
+          if (isHitCompleted && hit.label.includes("D")) {
+            bgClass = "border-orange-300";
+          } else if (isHitCompleted && hit.label.includes("T")) {
+            bgClass = "border-orange-500";
+          }
+
           hitsItems.push(
             <li
               key={player.name + i}
-              className="flex justify-center items-center bg-gray-500 text-white h-8 w-8"
+              className={`flex justify-center items-center h-10 w-10 border-2 ${bgClass} rounded-full xl:text-xl xl:h-16 xl:w-16`}
             >
-              <span>{hit.label}</span>
+              {isHitCompleted && <span>{hit.label}</span>}
             </li>
           );
         }
@@ -56,10 +66,10 @@ export default function Board({ game }) {
         return (
           <div
             key={player.name}
-            className="relative border-2 border-black flex justify-between items-center p-2 pl-6"
+            className="relative flex justify-between items-center p-6 pl-6 bg-white rounded-2xl w-full"
           >
             {activeTurn.playerIndex === currentPlayerIndex && (
-              <div className="h-full w-4 bg-green-500 absolute left-0"></div>
+              <div className="h-full w-4 bg-green-500 absolute left-0 rounded-l-2xl"></div>
             )}
             <div className="flex flex-col items-center w-20">
               <span className="text-3xl font-bold">{player.score}</span>
@@ -79,7 +89,7 @@ export default function Board({ game }) {
           </div>
         );
       })}
-      <ul>
+      {/* <ul>
         {currentGame.turns.map((turn) => {
           return turn.hits.map((hit, hitIndex) => {
             return (
@@ -89,7 +99,7 @@ export default function Board({ game }) {
             );
           });
         })}
-      </ul>
+      </ul> */}
     </div>
   );
 }

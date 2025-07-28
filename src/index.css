@@ -12,7 +12,9 @@ html {
 }
 
 body {
-  background: #F6EDFF;
+  background: url("./assets/dart-app-bg.jpg");
+  background-size: cover;
+  background-position: center;
   /* background: linear-gradient(
     0deg,
     rgba(249, 253, 255, 1) 0%,

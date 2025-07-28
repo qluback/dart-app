@@ -30,37 +30,42 @@ export default function App() {
     setGame((prevGame) => {
       let gameUpdated = { ...prevGame };
       const MULTIPLIER_KEYS = ["Double", "Triple"];
-      let hit = MULTIPLIER_KEYS.includes(key)
+      let currentHit = MULTIPLIER_KEYS.includes(key)
         ? formatMultiplierLabel(key)
         : key;
-      let hitScore = MULTIPLIER_KEYS.includes(key) ? 0 : Number(hit);
+      let currentHitScore = MULTIPLIER_KEYS.includes(key) ? 0 : Number(currentHit);
       let lastTurn = gameUpdated.turns[gameUpdated.turns.length - 1];
       let lastHit = lastTurn.hits[lastTurn.hits.length - 1] ?? null;
       let totalPlayerScore = gameUpdated.players[lastTurn.playerIndex].score;
+      console.log(lastHit);
 
+      // manage hit score with double or triple
       if (lastHit !== null && ["D", "T"].includes(lastHit.label)) {
-        if (lastHit.label === hit) {
+        // remove multiplier if selected twice in a row
+        if (lastHit.label === currentHit) {
           lastTurn.hits.pop();
-          hit = null;
+          currentHit = null;
           gameUpdated.turns[gameUpdated.turns.length - 1] = lastTurn;
         } else {
           switch (lastHit.label) {
             case "D":
-              hitScore = hit * 2;
+              currentHitScore = currentHit * 2;
               break;
             case "T":
-              hitScore = hit * 3;
+              currentHitScore = currentHit * 3;
               break;
           }
 
           lastTurn.hits[lastTurn.hits.length - 1] = {
-            label: lastHit.label + hit,
-            score: hitScore,
+            label: lastHit.label + currentHit,
+            score: currentHitScore,
           };
         }
 
-        totalPlayerScore =
-          prevGame.players[lastTurn.playerIndex].score - hitScore;
+        totalPlayerScore = updateTotalPlayerScore(
+          prevGame.players[lastTurn.playerIndex].score,
+          currentHitScore
+        );
         gameUpdated.players[lastTurn.playerIndex].score = totalPlayerScore;
 
         if (totalPlayerScore === 0) {
@@ -75,30 +80,46 @@ export default function App() {
       if (lastTurn.hits.length >= 3) {
         const nextPlayerIndex = lastTurn.playerIndex ? 0 : 1;
 
-        gameUpdated = switchPlayer(gameUpdated, lastTurn.playerIndex ? 0 : 1, {
-          label: hit,
-          score: hitScore,
+        gameUpdated = switchPlayer(gameUpdated, nextPlayerIndex, {
+          label: currentHit,
+          score: currentHitScore,
         });
-        totalPlayerScore = prevGame.players[nextPlayerIndex].score - hitScore;
+        lastTurn = gameUpdated.turns[gameUpdated.turns.length - 1];
+        totalPlayerScore = updateTotalPlayerScore(
+          prevGame.players[nextPlayerIndex].score,
+          currentHitScore
+        );
         gameUpdated.players[nextPlayerIndex].score = totalPlayerScore;
       } else {
-        if (hit !== null) {
-          lastTurn.hits.push({ label: hit, score: hitScore });
+        if (currentHit !== null) {
+          lastTurn.hits.push({ label: currentHit, score: currentHitScore });
         }
 
-        totalPlayerScore =
-          prevGame.players[lastTurn.playerIndex].score - hitScore;
+        totalPlayerScore = updateTotalPlayerScore(
+          prevGame.players[lastTurn.playerIndex].score,
+          currentHitScore
+        );
         gameUpdated.players[lastTurn.playerIndex].score = totalPlayerScore;
       }
 
       // player must finish with a hit on double/triple area
-      if (totalPlayerScore === 0 || isTotalPlayerScoreLowerThanZero(totalPlayerScore)) {
+      if (
+        totalPlayerScore === 0 ||
+        isTotalPlayerScoreLowerThanZero(totalPlayerScore)
+      ) {
+        console.log("problem");
         gameUpdated = resetPlayerScore(gameUpdated, lastTurn);
         gameUpdated = switchPlayer(gameUpdated, lastTurn.playerIndex ? 0 : 1);
       }
 
+      console.log(gameUpdated);
+
       return gameUpdated;
     });
+  }
+
+  function updateTotalPlayerScore(currentTotalPlayerScore, currentHitScore) {
+    return currentTotalPlayerScore - currentHitScore;
   }
 
   function isTotalPlayerScoreLowerThanZero(totalPlayerScore) {
@@ -110,6 +131,7 @@ export default function App() {
       (accumulator, currentValue) => accumulator + currentValue.score,
       0
     );
+    console.log(game.players[lastTurn.playerIndex].score, totalTurnScore);
     game.players[lastTurn.playerIndex].score =
       game.players[lastTurn.playerIndex].score + totalTurnScore;
 
@@ -128,8 +150,12 @@ export default function App() {
   const winner = game.players.find((player) => player.score === 0) ?? null;
 
   return (
-    <div className="h-screen overflow-hidden flex flex-col justify-between">
-      {winner !== null ? <Results players={game.players} /> : <Board game={game} />}
+    <div className="h-screen overflow-hidden flex flex-col justify-between items-center w-full sm:p-4 md:flex-row md:justify-center md:gap-16 lg:p-12">
+      {winner !== null ? (
+        <Results players={game.players} />
+      ) : (
+        <Board game={game} />
+      )}
       <Keyboard onSelectKey={handleSelectKey} />
     </div>
   );
